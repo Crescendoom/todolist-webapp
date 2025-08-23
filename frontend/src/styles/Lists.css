@@ -1,0 +1,270 @@
+/* Add these styles to your existing Lists.css or update them */
+
+.lists-container {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  border: none;
+  max-height: 450px;
+  display: flex;
+  flex-direction: column;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.task-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.task-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.task-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.task-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+  position: relative;
+  flex-shrink: 0;
+  min-height: 80px;
+}
+
+.task-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.task-item.completed {
+  background: #f0fdf4;
+  border-color: #16a34a;
+  opacity: 0.8;
+}
+
+.task-checkbox {
+  width: 20px;
+  height: 20px;
+  margin-right: 1rem;
+  cursor: pointer;
+  accent-color: #16a34a;
+}
+
+.task-content {
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.task-text {
+  font-size: 1rem;
+  color: #1e293b;
+  margin: 0 0 0.25rem 0;
+  transition: all 0.3s ease;
+}
+
+.task-text.completed {
+  text-decoration: line-through;
+  color: #64748b;
+}
+
+.task-category {
+  font-size: 0.8rem;
+  color: #000000;
+  background: #f1f5f9;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+  font-weight: 500;
+}
+
+.task-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.task-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.edit-btn {
+  background: #f59e0b;
+  color: white;
+}
+
+.edit-btn:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+}
+
+.delete-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.edit-input {
+  padding: 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #000000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.edit-select {
+  padding: 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.edit-select:focus {
+  outline: none;
+  border-color: #000000;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.edit-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.save-btn {
+  background: #16a34a;
+  color: white;
+  flex: 1;
+}
+
+.save-btn:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.cancel-btn {
+  background: #6b7280;
+  color: white;
+  flex: 1;
+}
+
+.cancel-btn:hover {
+  background: #4b5563;
+  transform: translateY(-1px);
+}
+
+.empty-tasks {
+  text-align: center;
+  padding: 3rem;
+  color: #64748b;
+}
+
+.empty-tasks h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.empty-tasks p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.task-count-info {
+  padding: 0.75rem 0;
+  margin-bottom: 1rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.task-count-info.has-scroll {
+  background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  padding: 0.75rem;
+}
+
+.scroll-indicator {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .lists-container {
+    max-height: 400px;
+  }
+  
+  .task-list {
+    max-height: 250px;
+  }
+  
+  .task-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    min-height: auto;
+  }
+  
+  .task-content {
+    width: 100%;
+    margin-right: 0;
+  }
+  
+  .task-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .edit-actions {
+    flex-direction: column;
+  }
+  
+  .task-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+}
