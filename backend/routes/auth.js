@@ -11,42 +11,13 @@ const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' })
 }
 
-// Email verification using Abstract API
-const verifyEmail = async (email) => {
-  try {
-    // Replace 'your_abstract_api_key_here' with your actual API key from .env file
-    const apiKey = process.env.ABSTRACT_EMAIL_API_KEY
-    
-    if (!apiKey) {
-      console.error('Abstract API key not configured')
-      return { isValid: false, error: 'Email verification service not configured' }
-    }
-
-    const response = await fetch(`https://emailvalidation.abstractapi.com/v1/?api_key=${apiKey}&email=${email}`)
-    const data = await response.json()
-    
-    console.log('Abstract API Response:', data)
-    
-    // Check if email is deliverable and not disposable
-    const isValid = data.deliverability === 'DELIVERABLE' && 
-                   data.is_disposable_email?.value === false &&
-                   data.is_valid_format?.value === true
-    
-    return { 
-      isValid, 
-      data,
-      error: isValid ? null : 'Email address is not valid or deliverable'
-    }
-  } catch (error) {
-    console.error('Email verification error:', error)
-    return { 
-      isValid: false, 
-      error: 'Email verification service temporarily unavailable'
-    }
-  }
+// Simple REGEX email validation only
+const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
 }
 
-// Register
+// Register with REGEX validation only
 router.post('/register', [
   body('username')
     .isLength({ min: 3, max: 30 })
@@ -69,31 +40,43 @@ router.post('/register', [
 
     const { username, email, password } = req.body
 
-    // Verify email with Abstract API
-    const emailVerification = await verifyEmail(email)
-    if (!emailVerification.isValid) {
+    console.log('🚀 Registration attempt:', { username, email })
+
+    // Simple email format validation only
+    if (!isValidEmail(email)) {
+      console.log('❌ Invalid email format')
       return res.status(400).json({ 
-        message: emailVerification.error || 'Please provide a valid email address' 
+        message: 'Please enter a valid email address format' 
       })
     }
 
+    console.log('✅ Email format validation passed')
+
     // Check if user already exists
     const existingUser = await User.findOne({ 
-      $or: [{ email }, { username }] 
+      $or: [{ email: email.toLowerCase() }, { username }] 
     })
     
     if (existingUser) {
+      console.log('❌ User already exists')
       return res.status(400).json({ 
         message: 'User with this email or username already exists' 
       })
     }
 
     // Create new user
-    const user = new User({ username, email, password })
+    console.log('👤 Creating new user...')
+    const user = new User({ 
+      username, 
+      email: email.toLowerCase(), 
+      password 
+    })
     await user.save()
 
     // Generate token
     const token = generateToken(user._id)
+
+    console.log('🎉 User created successfully!')
 
     res.status(201).json({
       message: 'User created successfully',
@@ -105,12 +88,12 @@ router.post('/register', [
       }
     })
   } catch (error) {
-    console.error('Registration error:', error)
+    console.error('💥 Registration error:', error)
     res.status(500).json({ message: 'Server error during registration' })
   }
 })
 
-// Login
+// Login (unchanged)
 router.post('/login', [
   body('email').isEmail().withMessage('Please enter a valid email'),
   body('password').exists().withMessage('Password is required')
@@ -126,8 +109,8 @@ router.post('/login', [
 
     const { email, password } = req.body
 
-    // Find user
-    const user = await User.findOne({ email })
+    // Find user (case insensitive email)
+    const user = await User.findOne({ email: email.toLowerCase() })
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' })
     }
@@ -156,7 +139,7 @@ router.post('/login', [
   }
 })
 
-// Get current user
+// Get current user (unchanged)
 router.get('/me', auth, async (req, res) => {
   try {
     res.json({
