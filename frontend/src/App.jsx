@@ -4,7 +4,6 @@ import Header from './components/Header'
 import CategoryAndTasks from './components/CategoryAndTasks'
 import Lists from './components/Lists'
 import ConfirmationModal from './components/ConfirmationModal'
-// Fix: Change 'categoriesAPI' to 'categoryAPI' (singular)
 import { categoryAPI, taskAPI } from './services/api'
 
 function App() {
@@ -12,6 +11,7 @@ function App() {
   const [tasks, setTasks] = useState([])
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [toast, setToast] = useState({ show: false, message: '', type: '' })
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
@@ -23,10 +23,20 @@ function App() {
 
   // Show toast notification
   const showToast = (message, type = 'success') => {
-    setToast({ show: true, message, type })
-    setTimeout(() => {
-      setToast({ show: false, message: '', type: '' })
-    }, 3000)
+    try {
+      setToast({ show: true, message, type })
+      
+      // Clear any existing timeout to prevent conflicts
+      if (window.toastTimeout) {
+        clearTimeout(window.toastTimeout)
+      }
+      
+      window.toastTimeout = setTimeout(() => {
+        setToast({ show: false, message: '', type: '' })
+      }, 3000)
+    } catch (error) {
+      console.error('Error showing toast:', error)
+    }
   }
 
   // Load initial data
@@ -34,18 +44,22 @@ function App() {
     const loadData = async () => {
       try {
         setIsLoading(true)
+        setError(null) // Clear any previous errors
         const [categoriesData, tasksData] = await Promise.all([
-          categoryAPI.getAll(), // Use categoryAPI (singular)
+          categoryAPI.getAll(),
           taskAPI.getAll()
         ])
         setCategories(categoriesData.map(cat => cat.name))
         setTasks(tasksData)
-      } catch (error) {
+      } 
+      catch (error) {
         console.error('Error loading data:', error)
+        setError('Failed to load data. Please check your connection and try again.')
         showToast('Failed to load data. Check if backend is running.', 'error')
         setCategories([])
         setTasks([])
-      } finally {
+      } 
+      finally {
         setIsLoading(false)
       }
     }
@@ -59,9 +73,11 @@ function App() {
       try {
         const tasksData = await taskAPI.getAll(selectedCategory)
         setTasks(tasksData)
-      } catch (error) {
+      } 
+      catch (error) {
         console.error('Error loading tasks:', error)
-        showToast('Failed to load tasks', 'error')
+        showToast('Failed to load tasks. Please try again.', 'error')
+        // Don't clear tasks completely, keep existing ones
       }
     }
 
@@ -76,20 +92,26 @@ function App() {
       await categoryAPI.create(name) // Use categoryAPI (singular)
       setCategories(prev => [...prev, name])
       showToast('Category added successfully!')
-    } catch (error) {
+    } 
+    catch (error) {
       showToast('Failed to add category', 'error')
       console.error('Error adding category:', error)
     }
   }
 
   const handleDeleteCategory = (categoryName) => {
-    setConfirmModal({
-      isOpen: true,
-      title: 'Delete Category',
-      message: `Are you sure you want to delete "${categoryName}"? This will also delete all tasks in this category.`,
-      onConfirm: () => confirmDeleteCategory(categoryName),
-      type: 'danger'
-    })
+    try {
+      setConfirmModal({
+        isOpen: true,
+        title: 'Delete Category',
+        message: `Are you sure you want to delete "${categoryName}"? This will also delete all tasks in this category.`,
+        onConfirm: () => confirmDeleteCategory(categoryName),
+        type: 'danger'
+      })
+    } catch (error) {
+      console.error('Error opening delete modal:', error)
+      showToast('Failed to open delete confirmation', 'error')
+    }
   }
 
   const confirmDeleteCategory = async (categoryName) => {
@@ -101,7 +123,8 @@ function App() {
         setSelectedCategory(null)
       }
       showToast('Category deleted successfully!')
-    } catch (error) {
+    } 
+    catch (error) {
       showToast('Failed to delete category', 'error')
       console.error('Error deleting category:', error)
     }
@@ -118,7 +141,8 @@ function App() {
       })
       setTasks(prev => [newTask, ...prev])
       showToast('Task added successfully!')
-    } catch (error) {
+    } 
+    catch (error) {
       showToast('Failed to add task', 'error')
       console.error('Error adding task:', error)
     }
@@ -131,20 +155,26 @@ function App() {
         task._id === taskId ? updatedTask : task
       ))
       showToast('Task updated successfully!')
-    } catch (error) {
+    } 
+    catch (error) {
       showToast('Failed to update task', 'error')
       console.error('Error updating task:', error)
     }
   }
 
   const handleDeleteTask = (task) => {
-    setConfirmModal({
-      isOpen: true,
-      title: 'Delete Task',
-      message: `Are you sure you want to delete "${task.text}"?`,
-      onConfirm: () => confirmDeleteTask(task._id),
-      type: 'danger'
-    })
+    try {
+      setConfirmModal({
+        isOpen: true,
+        title: 'Delete Task',
+        message: `Are you sure you want to delete "${task.text}"?`,
+        onConfirm: () => confirmDeleteTask(task._id),
+        type: 'danger'
+      })
+    } catch (error) {
+      console.error('Error opening delete modal:', error)
+      showToast('Failed to open delete confirmation', 'error')
+    }
   }
 
   const confirmDeleteTask = async (taskId) => {
@@ -152,7 +182,8 @@ function App() {
       await taskAPI.delete(taskId)
       setTasks(prev => prev.filter(task => task._id !== taskId))
       showToast('Task deleted successfully!')
-    } catch (error) {
+    } 
+    catch (error) {
       showToast('Failed to delete task', 'error')
       console.error('Error deleting task:', error)
     }
@@ -166,7 +197,8 @@ function App() {
         task._id === taskId ? updatedTask : task
       ))
       showToast(updatedTask.completed ? 'Task completed!' : 'Task uncompleted!')
-    } catch (error) {
+    } 
+    catch (error) {
       showToast('Failed to update task', 'error')
       console.error('Error toggling task:', error)
     }
@@ -177,21 +209,43 @@ function App() {
   const completedTasks = tasks.filter(task => task.completed).length
   const totalCategories = categories.length
 
+  if (error && !isLoading) {
+    return (
+      <div className="todo-app">
+        <Header />
+        <div className="loading-container">
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
+          <p className="loading-text" style={{ color: '#ef4444' }}>Oops! Something went wrong</p>
+          <p className="loading-subtext">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            style={{ 
+              marginTop: '1rem', 
+              padding: '0.5rem 1rem', 
+              backgroundColor: '#3b82f6', 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '0.375rem',
+              cursor: 'pointer'
+            }}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   if (isLoading) {
     return (
       <div className="todo-app">
         <Header />
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          height: '200px',
-          fontSize: '1.2rem',
-          color: '#64748b'
-        }}>
-          Loading...
-        </div>
+        <div className="loading-container">
+        <div className="spinner"></div>
+        <p className="loading-text">Loading your tasks...</p>
+        <p className="loading-subtext">Getting everything ready for you</p>
       </div>
+    </div>
     )
   }
 
