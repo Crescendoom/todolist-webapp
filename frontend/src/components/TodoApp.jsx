@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { categoryAPI, taskAPI } from '../services/api'
-import Header from './Header'
 import CategoryAndTasks from './CategoryAndTasks'
 import Lists from './Lists'
 import ConfirmationModal from './ConfirmationModal'
@@ -216,27 +215,24 @@ function TodoApp() {
   // Error state
   if (error && !isLoading) {
     return (
-      <div className="todo-app">
-        <Header />
-        <div className="loading-container">
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
-          <p className="loading-text" style={{ color: '#ef4444' }}>Oops! Something went wrong</p>
-          <p className="loading-subtext">{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            style={{ 
-              marginTop: '1rem', 
-              padding: '0.5rem 1rem', 
-              backgroundColor: '#3b82f6', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '0.375rem',
-              cursor: 'pointer'
-            }}
-          >
-            Try Again
-          </button>
-        </div>
+      <div className="loading-container">
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
+        <p className="loading-text" style={{ color: '#ef4444' }}>Oops! Something went wrong</p>
+        <p className="loading-subtext">{error}</p>
+        <button 
+          onClick={() => window.location.reload()} 
+          style={{ 
+            marginTop: '1rem', 
+            padding: '0.5rem 1rem', 
+            backgroundColor: '#3b82f6', 
+            color: 'white', 
+            border: 'none', 
+            borderRadius: '0.375rem',
+            cursor: 'pointer'
+          }}
+        >
+          Try Again
+        </button>
       </div>
     )
   }
@@ -244,13 +240,10 @@ function TodoApp() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="todo-app">
-        <Header />
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p className="loading-text">Loading your tasks...</p>
-          <p className="loading-subtext">Getting everything ready for you</p>
-        </div>
+      <div className="loading-container">
+        <div className="spinner"></div>
+        <p className="loading-text">Loading your tasks...</p>
+        <p className="loading-subtext">Getting everything ready for you</p>
       </div>
     )
   }
@@ -258,8 +251,6 @@ function TodoApp() {
   return (
     <ErrorBoundary>
       <div className="todo-app">
-        <Header />
-        
         <div className="main-layout">
           {/* Left Column - Category Management & Task Creation */}
           <div className="left-column">
@@ -277,59 +268,59 @@ function TodoApp() {
             </div>
           </div>
 
-          {/* Right Column - Stats & Task List */}
-          <div className="right-column">
-            {/* Progress Stats */}
-            <div className="step-section">
-              <h2>🎯 Your Progress</h2>
-              <div className="stats-grid">
-                <div className="stat-item">
-                  <div className="stat-number">{totalTasks}</div>
-                  <div className="stat-label">Total Tasks</div>
-                </div>
-                <div className="stat-item">
-                  <div className="stat-number">{completedTasks}</div>
-                  <div className="stat-label">Completed</div>
-                </div>
-                <div className="stat-item">
-                  <div className="stat-number">{totalCategories}</div>
-                  <div className="stat-label">Categories</div>
-                </div>
+        {/* Right Column - Stats & Task List */}
+        <div className="right-column">
+          {/* Progress Stats */}
+          <div className="step-section">
+            <h2>Your Progress</h2>
+            <div className="stats-grid">
+              <div className="stat-item">
+                <div className="stat-number">{totalTasks}</div>
+                <div className="stat-label">Total Tasks</div>
+              </div>
+              <div className="stat-item">
+                <div className="stat-number">{completedTasks}</div>
+                <div className="stat-label">Completed</div>
+              </div>
+              <div className="stat-item">
+                <div className="stat-number">{totalCategories}</div>
+                <div className="stat-label">Categories</div>
               </div>
             </div>
+          </div>
 
-            {/* Task List */}
-            <div className="step-section">
-              <h2>📝 Your Tasks</h2>
-              <Lists
-                tasks={tasks}
-                onUpdateTask={handleUpdateTask}
-                onDeleteTask={handleDeleteTask}
-                onToggleComplete={handleToggleComplete}
-                availableCategories={categories}
-              />
-            </div>
+          {/* Task List */}
+          <div className="step-section">
+            <h2>Your Tasks</h2>
+            <Lists
+              tasks={tasks}
+              onUpdateTask={handleUpdateTask}
+              onDeleteTask={handleDeleteTask}
+              onToggleComplete={handleToggleComplete}
+              availableCategories={categories}
+            />
           </div>
         </div>
+      </div>
 
-        {/* Toast Notification */}
-        {toast.show && (
-          <div className="toast-container">
-            <div className={`toast ${toast.type}`}>
-              {toast.message}
-            </div>
+      {/* Toast Notification */}
+      {toast.show && (
+        <div className="toast-container">
+          <div className={`toast ${toast.type}`}>
+            {toast.message}
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Confirmation Modal */}
-        <ConfirmationModal
-          isOpen={confirmModal.isOpen}
-          title={confirmModal.title}
-          message={confirmModal.message}
-          onConfirm={confirmModal.onConfirm}
-          onCancel={() => setConfirmModal({ ...confirmModal, isOpen: false })}
-          type={confirmModal.type}
-        />
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+        type={confirmModal.type}
+      />
       </div>
     </ErrorBoundary>
   )

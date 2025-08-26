@@ -1,5 +1,5 @@
 .header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: black;
   color: white;
   padding: 1rem 0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -11,13 +11,23 @@
   backdrop-filter: blur(10px);
 }
 
+/* Default header content */
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+}
+
+/* Main page header - left aligned with user info */
+.header.main .header-content {
+  justify-content: space-between;
+}
+
+/* Auth page header - centered title only */
+.header.auth .header-content {
+  justify-content: center;
 }
 
 .header-title {
@@ -47,23 +57,26 @@
   border-radius: 0.375rem;
   cursor: pointer;
   font-size: 0.875rem;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
 }
 
 .logout-button:hover {
   background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
 }
 
-/* Add spacing to prevent content overlap */
-body {
-  padding-top: 80px;
-}
-
+/* Responsive design */
 @media (max-width: 768px) {
-  .header-content {
+  .header.main .header-content {
     flex-direction: column;
     gap: 0.5rem;
     text-align: center;
+    justify-content: center;
+  }
+  
+  .header.auth .header-content {
+    text-align: center;
+    justify-content: center;
   }
   
   .header-title {
@@ -76,5 +89,21 @@ body {
   
   .header {
     padding: 0.75rem 0;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .header-title {
+    font-size: 1.25rem;
+  }
+  
+  .logout-button {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .user-greeting {
+    font-size: 0.75rem;
   }
 }

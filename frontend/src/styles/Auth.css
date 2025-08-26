@@ -1,10 +1,17 @@
 .auth-container {
-  min-height: 100vh;
+  height: calc(100vh - 80px); /* Account for header height */
+  width: 100vw;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 1rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: fixed;
+  top: 80px; /* Position below the header */
+  left: 0;
 }
 
 .auth-card {
@@ -12,9 +19,10 @@
   padding: 2rem;
   border-radius: 1rem;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  width: 100%;
+  width: 90%;
   max-width: 400px;
   text-align: center;
+  box-sizing: border-box;
 }
 
 .auth-card h2 {
@@ -60,8 +68,8 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: black;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
 }
 
 .error-message {
@@ -74,7 +82,7 @@
 }
 
 .auth-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: black;
   color: white;
   border: none;
   padding: 0.875rem;
@@ -110,7 +118,7 @@
 .switch-button {
   background: none;
   border: none;
-  color: #3b82f6;
+  color: black;
   cursor: pointer;
   font-weight: 600;
   text-decoration: underline;
@@ -118,7 +126,7 @@
 }
 
 .switch-button:hover {
-  color: #2563eb;
+  color: #374151;
 }
 
 /* Loading spinner for auth button */
@@ -145,4 +153,22 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-height: 600px) {
+  .auth-card {
+    padding: 1.5rem;
+  }
+  
+  .auth-card h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    width: 95%;
+    padding: 1.5rem;
+  }
 }

@@ -8,8 +8,24 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
-  padding-top: 60px; 
   font-size: 14px; 
+}
+
+.app {
+  min-height: 100vh;
+}
+
+.app.with-main-header {
+  padding-top: 80px;
+}
+
+.app.with-auth-header {
+  padding-top: 0;
+}
+
+.main-content {
+  margin: 0;
+  padding: 0;
 }
 
 .todo-app {
@@ -421,3 +437,4 @@ body.modal-open {
   color: #9ca3af;
   margin-top: 0.5rem;
 }
+
