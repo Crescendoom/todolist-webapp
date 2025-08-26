@@ -14,12 +14,15 @@ const logger = {
   }
 }
 
-// Generic API call function
+// Generic API call function with auth
 const apiCall = async (endpoint, options = {}) => {
   try {
+    const token = localStorage.getItem('token')
+    
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
         ...options.headers,
       },
       ...options,

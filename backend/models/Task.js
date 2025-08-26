@@ -16,14 +16,19 @@ const taskSchema = new mongoose.Schema({
     completed: {
         type: Boolean,
         default: false
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 }, {
     timestamps: true
 })
 
 // Add indexes for better performance
-taskSchema.index({ category: 1 })
-taskSchema.index({ completed: 1 })
-taskSchema.index({ createdAt: -1 })
+taskSchema.index({ category: 1, user: 1 })
+taskSchema.index({ completed: 1, user: 1 })
+taskSchema.index({ createdAt: -1, user: 1 })
 
 module.exports = mongoose.model('Task', taskSchema)

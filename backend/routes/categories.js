@@ -2,6 +2,10 @@ const express = require('express')
 const router = express.Router()
 const Category = require('../models/Category')
 const Task = require('../models/Task')
+const auth = require('../middleware/auth')
+
+// Apply auth middleware to all routes
+router.use(auth)
 
 // Logger utility
 const logger = {
@@ -13,10 +17,10 @@ const logger = {
   }
 }
 
-// Get all categories
+// Get all categories for logged-in user
 router.get('/', async (req, res) => {
   try {
-    const categories = await Category.find().sort({ createdAt: -1 })
+    const categories = await Category.find({ user: req.user._id }).sort({ createdAt: -1 })
     res.json(categories)
   } catch (error) {
     logger.error('Error fetching categories:', error.message)
@@ -34,17 +38,21 @@ router.post('/', async (req, res) => {
     }
 
     const existingCategory = await Category.findOne({ 
-      name: name.trim().toLowerCase() 
+      name: name.trim(),
+      user: req.user._id
     })
     
     if (existingCategory) {
       return res.status(400).json({ message: 'Category already exists' })
     }
 
-    const category = new Category({ name: name.trim() })
+    const category = new Category({ 
+      name: name.trim(),
+      user: req.user._id
+    })
     await category.save()
     
-    logger.info(`Category created: ${category.name}`)
+    logger.info(`Category created: ${category.name} for user: ${req.user.username}`)
     res.status(201).json(category)
   } catch (error) {
     logger.error('Error creating category:', error.message)
@@ -57,12 +65,18 @@ router.delete('/:name', async (req, res) => {
   try {
     const { name } = req.params
     
-    // First, delete all tasks in this category
-    const deletedTasks = await Task.deleteMany({ category: name })
-    logger.info(`Deleted ${deletedTasks.deletedCount} tasks from category: ${name}`)
+    // First, delete all tasks in this category for the user
+    const deletedTasks = await Task.deleteMany({ 
+      category: name,
+      user: req.user._id
+    })
+    logger.info(`Deleted ${deletedTasks.deletedCount} tasks from category: ${name} for user: ${req.user.username}`)
     
     // Then delete the category itself
-    const category = await Category.findOneAndDelete({ name })
+    const category = await Category.findOneAndDelete({ 
+      name,
+      user: req.user._id
+    })
     
     if (!category) {
       return res.status(404).json({ message: 'Category not found' })

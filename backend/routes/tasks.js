@@ -1,6 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const Task = require('../models/Task')
+const auth = require('../middleware/auth')
+
+// Apply auth middleware to all routes
+router.use(auth)
 
 // Logger utility
 const logger = {
@@ -12,11 +16,15 @@ const logger = {
   }
 }
 
-// Get all tasks
+// Get all tasks for logged-in user
 router.get('/', async (req, res) => {
   try {
     const { category } = req.query
-    const filter = category && category !== 'All Categories' ? { category } : {}
+    const filter = { user: req.user._id }
+    
+    if (category && category !== 'All Categories') {
+      filter.category = category
+    }
     
     const tasks = await Task.find(filter).sort({ createdAt: -1 })
     res.json(tasks)
@@ -42,11 +50,12 @@ router.post('/', async (req, res) => {
     const task = new Task({
       text: text.trim(),
       category: category.trim(),
-      completed: false
+      completed: false,
+      user: req.user._id
     })
     
     await task.save()
-    logger.info(`Task created: ${task.text}`)
+    logger.info(`Task created: ${task.text} for user: ${req.user.username}`)
     res.status(201).json(task)
   } catch (error) {
     logger.error('Error creating task:', error.message)
@@ -58,11 +67,11 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params
-    const { text, category } = req.body
+    const updates = req.body
     
-    const task = await Task.findByIdAndUpdate(
-      id,
-      { text: text.trim(), category: category.trim() },
+    const task = await Task.findOneAndUpdate(
+      { _id: id, user: req.user._id },
+      updates,
       { new: true }
     )
     
@@ -70,7 +79,7 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Task not found' })
     }
     
-    logger.info(`Task updated: ${task.text}`)
+    logger.info(`Task updated: ${task.text} for user: ${req.user.username}`)
     res.json(task)
   } catch (error) {
     logger.error('Error updating task:', error.message)
@@ -82,7 +91,7 @@ router.put('/:id', async (req, res) => {
 router.patch('/:id/toggle', async (req, res) => {
   try {
     const { id } = req.params
-    const task = await Task.findById(id)
+    const task = await Task.findOne({ _id: id, user: req.user._id })
     
     if (!task) {
       return res.status(404).json({ message: 'Task not found' })
@@ -91,7 +100,7 @@ router.patch('/:id/toggle', async (req, res) => {
     task.completed = !task.completed
     await task.save()
     
-    logger.info(`Task ${task.completed ? 'completed' : 'uncompleted'}: ${task.text}`)
+    logger.info(`Task ${task.completed ? 'completed' : 'uncompleted'}: ${task.text} for user: ${req.user.username}`)
     res.json(task)
   } catch (error) {
     logger.error('Error toggling task:', error.message)
@@ -103,7 +112,7 @@ router.patch('/:id/toggle', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params
-    const task = await Task.findByIdAndDelete(id)
+    const task = await Task.findOneAndDelete({ _id: id, user: req.user._id })
     
     if (!task) {
       return res.status(404).json({ message: 'Task not found' })

@@ -43,7 +43,7 @@ function Lists({ tasks, onUpdateTask, onDeleteTask, onToggleComplete, availableC
             <div className="lists-container">
                 <div className="empty-tasks">
                     <h3>No Tasks Found</h3>
-                    <p>Add some tasks to get started! 📝</p>
+                    <p>Add some tasks to get started!</p>
                 </div>
             </div>
         )

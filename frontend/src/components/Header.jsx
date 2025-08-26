@@ -1,9 +1,22 @@
-import '/src/styles/Header.css'
+import { useAuth } from '../contexts/AuthContext'
+import '../styles/Header.css'
 
 function Header() {
+    const { user, logout } = useAuth()
+
     return (
         <header className="header">
-            <h1>To-Do Lists</h1>
+            <div className="header-content">
+                <h1 className="header-title">To-Do Lists</h1>
+                {user && (
+                    <div className="header-user">
+                        <span className="user-greeting">Hello, {user.username}!</span>
+                        <button onClick={logout} className="logout-button">
+                            Logout
+                        </button>
+                    </div>
+                )}
+            </div>
         </header>
     )
 }
