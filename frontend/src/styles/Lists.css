@@ -186,13 +186,13 @@
 }
 
 .cancel-btn {
-  background: #6b7280;
+  background: black;
   color: white;
   flex: 1;
 }
 
 .cancel-btn:hover {
-  background: #4b5563;
+  background: #333333;
   transform: translateY(-1px);
 }
 

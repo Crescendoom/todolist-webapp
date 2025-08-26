@@ -59,7 +59,11 @@ function CategoryAndTasks({
                             className="category-input"
                             autoFocus
                         />
-                        <button type="submit" className="save-category-btn">
+                        <button 
+                            type="submit" 
+                            className={`save-category-btn ${!newCategoryName.trim() ? 'disabled' : ''}`}
+                            disabled={!newCategoryName.trim()}
+                        >
                             Save
                         </button>
                     </form>

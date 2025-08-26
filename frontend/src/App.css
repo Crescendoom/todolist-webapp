@@ -134,7 +134,7 @@ body {
 .toast-container {
   position: fixed;
   bottom: 20px;
-  right: 15px;
+  left: 15px;
   z-index: 1000;
   pointer-events: none;
   display: flex;
@@ -154,8 +154,9 @@ body {
   gap: 0.75rem;
   pointer-events: auto;
   animation: toastSlideInBottom 0.3s ease-out;
-  border-left: 3px solid #e2e8f0;
+  border-left: 8px solid #e2e8f0;
   position: relative;
+  
 }
 
 .toast.success {
