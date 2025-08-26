@@ -11,6 +11,41 @@ const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' })
 }
 
+// Email verification using Abstract API
+const verifyEmail = async (email) => {
+  try {
+    // Replace 'your_abstract_api_key_here' with your actual API key from .env file
+    const apiKey = process.env.ABSTRACT_EMAIL_API_KEY
+    
+    if (!apiKey) {
+      console.error('Abstract API key not configured')
+      return { isValid: false, error: 'Email verification service not configured' }
+    }
+
+    const response = await fetch(`https://emailvalidation.abstractapi.com/v1/?api_key=${apiKey}&email=${email}`)
+    const data = await response.json()
+    
+    console.log('Abstract API Response:', data)
+    
+    // Check if email is deliverable and not disposable
+    const isValid = data.deliverability === 'DELIVERABLE' && 
+                   data.is_disposable_email?.value === false &&
+                   data.is_valid_format?.value === true
+    
+    return { 
+      isValid, 
+      data,
+      error: isValid ? null : 'Email address is not valid or deliverable'
+    }
+  } catch (error) {
+    console.error('Email verification error:', error)
+    return { 
+      isValid: false, 
+      error: 'Email verification service temporarily unavailable'
+    }
+  }
+}
+
 // Register
 router.post('/register', [
   body('username')
@@ -33,6 +68,14 @@ router.post('/register', [
     }
 
     const { username, email, password } = req.body
+
+    // Verify email with Abstract API
+    const emailVerification = await verifyEmail(email)
+    if (!emailVerification.isValid) {
+      return res.status(400).json({ 
+        message: emailVerification.error || 'Please provide a valid email address' 
+      })
+    }
 
     // Check if user already exists
     const existingUser = await User.findOne({ 
